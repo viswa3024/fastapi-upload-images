@@ -1,5 +1,5 @@
 # server.py
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 import os
@@ -55,6 +55,17 @@ async def delete_all_images():
             os.remove(file)
             deleted_files.append(file.name)
     return {"message": "All files have been deleted", "deleted_files": deleted_files}
+
+
+@app.delete("/delete-all-images")
+async def delete_all_images():
+    deleted_files = []
+    for file in UPLOAD_DIR.iterdir():
+        if file.is_file() and file.name != ".gitkeep":
+            os.remove(file)
+            deleted_files.append(file.name)
+    return {"message": "All files have been deleted except .gitkeep", "deleted_files": deleted_files}
+
 
 if __name__ == "__main__":
     import uvicorn
